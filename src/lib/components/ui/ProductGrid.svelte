@@ -11,7 +11,7 @@
 	</div>
 
 	<!-- Product Grid -->
-	{#if products === undefined || products.length() === 0}
+	{#if products === undefined || products.length === 0}
 		<div class="empty-state">
 			<CardPlaceholder />
 		</div>
