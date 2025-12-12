@@ -1,5 +1,6 @@
 <script>
 	import { addToCart } from "$lib/client/cart.svelte.js";
+	import AddToCart from "$lib/components/ui/AddToCart.svelte";
     import { Button, ButtonGroup, Badge, Rating, Accordion, AccordionItem } from "flowbite-svelte";
     import { ShoppingBagSolid, HeartSolid } from "flowbite-svelte-icons";
     
@@ -22,9 +23,9 @@
     //     alert(`Added to cart: Size ${selectedSize}, Color ${selectedColor}, Quantity ${quantity}`);
     // }
     
-    function addToWishlist() {
-        alert("Added to wishlist!");
-    }
+    // function addToWishlist() {
+    //     alert("Added to wishlist!");
+    // }
         let { data } = $props();
         let product = data.product[0];
         
@@ -44,18 +45,13 @@
                     />
                 </div>
                 <div class="flex gap-4">
+                    <AddToCart data={{id: product.id, quantity}} />
                     <!-- <div class="flex-1">
-                        <Button onclick={()=> addToCart(product.id)} size="lg" class="w-full">
-                            <ShoppingBagSolid class="w-5 h-5 me-2" />
-                            Add to Cart
-                        </Button>
-                    </div> -->
-                    <div class="flex-1">
                         <Button onclick={addToWishlist} color="light" size="lg" class="w-full">
                             <HeartSolid class="w-5 h-5 me-2" />
                             Wishlist
                         </Button>
-                    </div>
+                    </div> -->
                 </div>
             </div>
 

@@ -1,5 +1,6 @@
 // cart.svelte.ts
 
+import { syncCartToServer } from "./cartSync";
 /**
  * Interface for cart items stored in localStorage
  * We only store the minimum data needed
@@ -8,54 +9,26 @@ export interface CartItem {
 	id: string;
 	quantity: number;
 }
-
 /**
  * Configuration for cart storage
  */
 const CART_STORAGE_KEY = 'shopping_cart' as const;
-
-/**
- * Cart state - only stores { id, quantity }
- */
-let cartItems = $state<CartItem[]>([]);
-
 /**
  * Indicates if the cart has been initialized
  */
 let initialized = $state(false);
 
+
 /**
- * Load cart from localStorage on initialization
+ * Cart state - only stores { id, quantity }
  */
-// function loadCart(): void {
-// 	if (typeof window !== 'undefined') {
-// 		try {
-// 			const stored = localStorage.getItem(CART_STORAGE_KEY);
-// 			if (stored) {
-// 				const parsed = JSON.parse(stored) as unknown;
-				
-// 				// Validate the data structure
-// 				if (Array.isArray(parsed)) {
-// 					cartItems = parsed.filter(
-// 						(item): item is CartItem => 
-// 							typeof item === 'object' &&
-// 							item !== null &&
-// 							typeof item.id === 'string' &&
-// 							typeof item.quantity === 'number'
-// 					);
-// 				}
-// 			}
-// 		} catch (error) {
-// 			console.error('Failed to load cart:', error);
-// 			cartItems = [];
-// 		} finally {
-// 			initialized = true;
-// 		}
-// 	}
-// }
 export const cart = $state({
   items: [] as CartItem[]
 });
+
+/**
+ * Load cart from localStorage on initialization
+ */
 function loadCart(): void {
   if (typeof window !== 'undefined') {
     try {
@@ -74,55 +47,34 @@ function loadCart(): void {
       }
     } catch (error) {
       console.error('Failed to load cart:', error);
+    } finally {
+      initialized = true;
     }
   }
 }
-
-/**
- * Save cart to localStorage whenever it changes
- */
-// $effect(() => {
-// 	// Only save after initial load to avoid overwriting with empty array
-// 	// 	if (initialized && typeof window !== 'undefined') {
-//     if (initialized) {
-// 		try {
-// 			localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
-// 		} catch (error) {
-// 			console.error('Failed to save cart:', error);
-// 		}
-// 	}
-// });
-
-/**
- * Add a product to the cart or increase its quantity
- */
-// export function addToCart(productId: string, quantity: number = 1): void {
-// 	if (quantity <= 0) {
-// 		throw new Error('Quantity must be greater than 0');
-// 	}
-
-// 	const existingItem = cartItems.find(item => item.id === productId);
-	
-// 	if (existingItem) {
-// 		existingItem.quantity += quantity;
-// 	} else {
-// 		cartItems.push({ id: productId, quantity });
-//         console.log(cartItems);
-// 	}
-// }
 /**
  * Save cart to localStorage
  */
-function saveCart(): void {
-  if (typeof window !== 'undefined') {
-    try {
+async function saveCart(): Promise<void> {
+  if (initialized && typeof window !== 'undefined') {
+    if (initialized) {
+      try {
       localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart.items));
     } catch (error) {
       console.error('Failed to save cart:', error);
     }
+    }
+  }
+   try {
+    // Persist server-side
+    await syncCartToServer(cart.items);
+  } catch (err) {
+    console.error('Failed to sync cart to server:', err);
   }
 }
-
+/**
+ * Add a product to the cart or increase its quantity
+ */
 export function addToCart(productId: string, quantity: number = 1): void {
   if (quantity <= 0) throw new Error('Quantity must be greater than 0');
 
@@ -133,11 +85,8 @@ export function addToCart(productId: string, quantity: number = 1): void {
   } else {
     cart.items.push({ id: productId, quantity });
   }
-  
   saveCart();
-  console.log(localStorage.getItem(CART_STORAGE_KEY));
 }
-
 /**
  * Remove a product from the cart entirely
  */
@@ -145,7 +94,6 @@ export function removeFromCart(productId: string): void {
   cart.items = cart.items.filter(item => item.id !== productId);
   saveCart();
 }
-
 /**
  * Update the quantity of a specific product
  * If quantity is 0 or less, removes the item
@@ -175,7 +123,7 @@ export function clearCart(): void {
  * Get a specific cart item by product ID
  */
 export function getCartItem(productId: string): CartItem | undefined {
-	return cartItems.find(item => item.id === productId);
+	return cart.items.find(item => item.id === productId);
 }
 
 /**
@@ -189,22 +137,22 @@ export function getCartItems(): readonly CartItem[] {
  * Check if a product is in the cart
  */
 export function isInCart(productId: string): boolean {
-	return cartItems.some(item => item.id === productId);
+	return cart.items.some(item => item.id === productId);
 }
 /**
  * Total quantity of all items in cart
  */
-export const cartCount = () => cartItems.reduce((sum, item) => sum + item.quantity, 0);
+export const cartCount = () => cart.items.reduce((sum, item) => sum + item.quantity, 0);
 
 /**
  * Total number of unique products in cart
  */
-export const getUniqueItemCount = () => cartItems.length;
+export const getUniqueItemCount = () => cart.items.length;
 
 /**
  * Check if cart is empty
  */
-export const isEmpty = () => cartItems.length === 0;
+export const isEmpty = () => cart.items.length === 0;
 
 // Initialize cart on module load
 loadCart();

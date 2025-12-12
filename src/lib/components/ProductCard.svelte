@@ -2,6 +2,7 @@
 	import { Card, Button, Rating, Badge } from 'flowbite-svelte';
 	import type { products } from '$lib/server/db/schema';
 	import { addToCart } from '$lib/client/cart.svelte';
+	import AddToCart from './ui/AddToCart.svelte';
 
 	// type Product = typeof products.$inferSelect;
 	// let { product }: { product: Product } = $props();
@@ -45,7 +46,7 @@
 		</div>
 		{#if showBuyNow}
 			<div class="flex justify-end gap-5 pt-3">
-				<Button size="sm" onclick={() => addToCart(product.id)}>Add to Cart</Button>
+				<AddToCart data={{id: product.id}}/>
 				<Button size="sm" href="/products/{product.id}">Buy now</Button>
 			</div>
 		{/if}

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Navbar, NavBrand, NavLi, NavUl, NavHamburger, DarkMode } from 'flowbite-svelte';
 	import { fade } from 'svelte/transition';
-	import Sidebar from './Sidebar.svelte';
 	import Drawer from './Drawer.svelte';
 	import IronCross from './icons/IronCross.svelte';
+	let { drawerProducts} = $props();
 </script>
 
 <Navbar>
@@ -20,6 +20,6 @@
 	</NavBrand>
 	<div class="flex gap-2">
 		<DarkMode />
-		<Drawer />
+		<Drawer cartProducts={drawerProducts} />
 	</div>
 </Navbar>
