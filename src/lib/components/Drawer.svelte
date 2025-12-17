@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import {
 		cart,
 		clearCart,
@@ -7,7 +7,7 @@
 		removeFromCart,
 		updateQuantity
 	} from '$lib/client/cart.svelte';
-	import { drawerOpen } from '$lib/client/drawerState.svelte';
+	// import { drawerOpen } from '$lib/client/drawerState.svelte';
 	import {
 		Drawer,
 		CardPlaceholder,
@@ -67,10 +67,10 @@
 	{#if isEmpty()}
 		<div class="text-gray-500 dark:text-gray-400">Shopping cart empty!</div>
 	{/if}
-	<Sidebar disableBreakpoints={true} class="top-16 w-full static">
+	<!-- <Sidebar disableBreakpoints={true} class="top-16 w-full static">
 		<SidebarWrapper class="overflow-y-auto w-auto rounded-sm px-0 py-0 dark:bg-gray-800">
-			<SidebarGroup>
-				{#each cartProducts as item}
+			<SidebarGroup> -->
+				<!-- {#each cartProducts as item}
 					<Card class="p-1">
 						<div class="flex justify-between pb-3">
 							<Avatar src="/product.webp" cornerStyle="rounded" />
@@ -92,10 +92,10 @@
 						</div>
 					</Card>
 				{/each}
-			</SidebarGroup>
+			<!-- </SidebarGroup>
 		</SidebarWrapper>
-	</Sidebar>
-	<Footer class="text-gray-500 dark:text-gray-400">
+	</Sidebar> -->
+	<!-- <Footer class="text-gray-500 dark:text-gray-400">
 		<Button
 			onclick={() => {
 				emptyCart();
@@ -111,4 +111,5 @@
 			</a>
 		{/if}
 	</Footer>
-</Drawer>
+</Drawer> -->
+ --> -->

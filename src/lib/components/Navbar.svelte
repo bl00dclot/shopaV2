@@ -1,9 +1,20 @@
 <script lang="ts">
-	import { Navbar, NavBrand, NavLi, NavUl, NavHamburger, DarkMode } from 'flowbite-svelte';
+	import {
+		Navbar,
+		NavBrand,
+		NavLi,
+		NavUl,
+		NavHamburger,
+		DarkMode,
+		A,
+		Button
+	} from 'flowbite-svelte';
 	import { fade } from 'svelte/transition';
-	import Drawer from './Drawer.svelte';
-	import IronCross from './icons/IronCross.svelte';
-	let { drawerProducts} = $props();
+	import { innerWidth } from 'svelte/reactivity/window';
+	import { CartSolid } from 'flowbite-svelte-icons';
+	import DropdownCart from './DropdownCart.svelte';
+
+	let { drawerProducts } = $props();
 </script>
 
 <Navbar>
@@ -20,6 +31,13 @@
 	</NavBrand>
 	<div class="flex gap-2">
 		<DarkMode />
-		<Drawer cartProducts={drawerProducts} />
+		<!-- <Drawer cartProducts={drawerProducts} /> -->
+		{#if innerWidth.current !== undefined && innerWidth.current < 768}
+			<A href="/cart">
+				<Button><CartSolid class="shrink-0 h-6 w-6" /></Button>
+			</A>
+		{:else}
+			<DropdownCart cartProducts={drawerProducts} />
+		{/if}
 	</div>
 </Navbar>

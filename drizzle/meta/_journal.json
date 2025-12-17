@@ -8,6 +8,13 @@
       "when": 1764948397335,
       "tag": "0000_giant_goblin_queen",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1765804097156,
+      "tag": "0001_brave_inhumans",
+      "breakpoints": true
     }
   ]
 }
