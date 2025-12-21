@@ -1,13 +1,17 @@
 // cart.svelte.ts
 
-import { syncCartToServer } from "./cartSync";
+// import { syncCartToServer } from "./cartSync";
 /**
  * Interface for cart items stored in localStorage
  * We only store the minimum data needed
+ * @interface CartItem
  */
 export interface CartItem {
 	id: string;
 	quantity: number;
+  name: string;
+  price: string;
+  image: string;
 }
 /**
  * Configuration for cart storage
@@ -20,7 +24,7 @@ let initialized = $state(false);
 
 
 /**
- * Cart state - only stores { id, quantity }
+ * Cart state - only stores { id, quantity, name, price, image } for each item
  */
 export const cart = $state({
   items: [] as CartItem[]
@@ -41,7 +45,10 @@ function loadCart(): void {
               typeof item === 'object' &&
               item !== null &&
               typeof item.id === 'string' &&
-              typeof item.quantity === 'number'
+              typeof item.quantity === 'number' &&
+              typeof item.name === 'string' &&
+              typeof item.price === 'string' &&
+              typeof item.image === 'string'
           );
         }
       }
@@ -65,34 +72,62 @@ async function saveCart(): Promise<void> {
     }
     }
   }
-   try {
-    // Persist server-side
-    await syncCartToServer(cart.items);
-  } catch (err) {
-    console.error('Failed to sync cart to server:', err);
-  }
+        const cartServer = fetch('/api/cart').then(res => res.json()).catch(() => null);
+      console.log('Fetched cart from server:', cartServer);
+  //  try {
+  //   // Persist server-side
+  //   await syncCartToServer(cart.items);
+  // } catch (err) {
+  //   console.error('Failed to sync cart to server:', err);
+  // }
 }
 /**
  * Add a product to the cart or increase its quantity
  */
-export function addToCart(productId: string, quantity: number = 1): void {
-  if (quantity <= 0) throw new Error('Quantity must be greater than 0');
-
-  const existingItem = cart.items.find(item => item.id === productId);
+export async function addToCart(cartItem: CartItem) {
+  //localStorage validation
+  if (cartItem.quantity <= 0) throw new Error('Quantity must be greater than 0');
+  //localStorage update
+  const existingItem = cart.items.find(item => item.id === cartItem.id);
   
   if (existingItem) {
-    existingItem.quantity += quantity;
+    existingItem.quantity += cartItem.quantity;
   } else {
-    cart.items.push({ id: productId, quantity });
+    cart.items.push({
+      id: cartItem.id, quantity: cartItem.quantity,
+      name: cartItem.name,
+      price: cartItem.price,
+      image: cartItem.image
+    });
   }
   saveCart();
+  const cartItemsServer = await fetch('/api/cart', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      items: cart.items.map(item => ({
+        productId: item.id,
+        qty: item.quantity
+      }))
+    })});
+      if (!cartItemsServer.ok) {
+    console.error('Failed to sync cart with server:', await cartItemsServer.text());
+      };
 }
 /**
  * Remove a product from the cart entirely
  */
-export function removeFromCart(productId: string): void {
+export async function removeFromCart(productId: string) {
   cart.items = cart.items.filter(item => item.id !== productId);
   saveCart();
+    const removeFromServerCart = await fetch(`/api/cart?productId=${encodeURIComponent(productId)}`, {
+    method: 'DELETE'
+  });
+  if (!removeFromServerCart.ok) {
+    console.error('Failed to remove item from server cart:', await removeFromServerCart.text());
+  };
 }
 /**
  * Update the quantity of a specific product

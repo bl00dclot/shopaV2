@@ -1,3 +1,8 @@
-import { writable } from 'svelte/store';
 
-export const cartOpen = writable(false);
+export const cartOpen = $state({
+    isOpen: false
+});
+
+export function openCart() {
+    document.getElementById('dropdown-trigger')?.click();
+};

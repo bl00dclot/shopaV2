@@ -3,11 +3,20 @@ import { db } from '$lib/server/db';
 import { carts, cartItems } from '$lib/server/db/schema';
 import { eq, and, lt, inArray, sql } from 'drizzle-orm';
 import { randomUUID } from 'crypto';
+import type { RequestEvent } from '@sveltejs/kit';
+import { readCartId, setCartId } from './cookies';
 
 const TTL_MS = 60 * 60 * 1000;
 
 const asMs = (value: Date | number) =>
   typeof value === 'number' ? value : value.getTime();
+
+const ensureCartId = async (event: RequestEvent) => {
+  const existing = readCartId(event);
+  const cartId = await getOrCreateCart(existing ?? undefined);
+  if (!existing || existing !== cartId) setCartId(event, cartId);
+  return cartId;
+};
 
 export async function getOrCreateCart(cartId?: string) {
   const now = Date.now();

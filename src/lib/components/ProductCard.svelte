@@ -3,6 +3,7 @@
 	import type { products } from '$lib/server/db/schema';
 	import { addToCart } from '$lib/client/cart.svelte';
 	import AddToCart from './ui/AddToCart.svelte';
+	import type { CartItem } from '$lib/client/cart.svelte';
 
 	// type Product = typeof products.$inferSelect;
 	// let { product }: { product: Product } = $props();
@@ -46,7 +47,7 @@
 		</div>
 		{#if showBuyNow}
 			<div class="flex justify-end gap-5 pt-3">
-				<AddToCart data={{id: product.id}}/>
+				<AddToCart data={{id: product.id, name: product.name, price: product.price, image: product.image}}/>
 				<Button size="sm" href="/products/{product.id}">Buy now</Button>
 			</div>
 		{/if}

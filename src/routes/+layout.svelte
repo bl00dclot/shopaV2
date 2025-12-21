@@ -3,13 +3,11 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import WalletProvider from '$lib/components/WalletProvider.svelte';
 	let { children } = $props();
-
-
 </script>
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
 </svelte:head>
 <WalletProvider>
-{@render children()}
+		{@render children()}
 </WalletProvider>

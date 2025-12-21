@@ -11,6 +11,8 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<Navbar drawerProducts={data.cart} />
-{@render children()}
+<Navbar />
+<div class="pt-16">
+	{@render children()}
+</div>
 <Footer />

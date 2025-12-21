@@ -8,7 +8,7 @@ const ensureCartId = async (event: RequestEvent) => {
   const cartId = await getOrCreateCart(existing ?? undefined);
   if (!existing || existing !== cartId) setCartId(event, cartId);
   return cartId;
-};
+}
 
 export async function GET(event) {
   const cartId = await ensureCartId(event);
